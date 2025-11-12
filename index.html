@@ -1,0 +1,752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Drone A Whale - Citizen Science Whale Photogrammetry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.7;
+            color: #1a2332;
+            background: #0a1628;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #ffffff;
+        }
+
+        .hero {
+            background: linear-gradient(135deg, #0c2d48 0%, #145374 50%, #2e8b9e 100%);
+            color: white;
+            padding: 100px 60px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="100" height="100" patternUnits="userSpaceOnUse"><path d="M 100 0 L 0 0 0 100" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100%" height="100%" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 4em;
+            margin-bottom: 20px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .hero .subtitle {
+            font-size: 1.4em;
+            font-weight: 300;
+            opacity: 0.95;
+            letter-spacing: 0.5px;
+        }
+
+        .intro-section {
+            background: linear-gradient(to bottom, #f8fbfd 0%, #ffffff 100%);
+            padding: 80px 60px;
+            text-align: center;
+        }
+
+        .intro-text {
+            max-width: 900px;
+            margin: 0 auto;
+            font-size: 1.15em;
+            line-height: 1.9;
+            color: #2c3e50;
+        }
+
+        .content {
+            padding: 60px;
+            max-width: 1100px;
+            margin: 0 auto;
+        }
+
+        .section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.2em;
+            color: #0c2d48;
+            margin-bottom: 30px;
+            font-weight: 600;
+            border-bottom: 3px solid #2e8b9e;
+            padding-bottom: 15px;
+        }
+
+        .section-content {
+            font-size: 1.05em;
+            color: #34495e;
+            line-height: 1.9;
+        }
+
+        .section-content p {
+            margin-bottom: 20px;
+        }
+
+        .section-content ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .section-content ul li {
+            padding: 12px 0 12px 35px;
+            position: relative;
+            line-height: 1.8;
+        }
+
+        .section-content ul li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: #2e8b9e;
+            font-weight: bold;
+            font-size: 1.3em;
+        }
+
+        /* Upload Section - Prominent */
+        .upload-section {
+            background: linear-gradient(135deg, #0c2d48 0%, #145374 100%);
+            color: white;
+            padding: 60px;
+            border-radius: 16px;
+            margin: 60px 0;
+            box-shadow: 0 10px 40px rgba(12, 45, 72, 0.3);
+        }
+
+        .upload-section h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .upload-intro {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            opacity: 0.95;
+            line-height: 1.8;
+        }
+
+        .upload-methods {
+            margin-top: 40px;
+        }
+
+        .method-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 12px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .method-card:hover {
+            background: rgba(255, 255, 255, 0.15);
+            border-color: rgba(255, 255, 255, 0.4);
+        }
+
+        .method-header {
+            padding: 25px 30px;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            user-select: none;
+        }
+
+        .method-header h3 {
+            font-size: 1.4em;
+            font-weight: 600;
+        }
+
+        .method-arrow {
+            transition: transform 0.3s ease;
+            font-size: 1.3em;
+            opacity: 0.7;
+        }
+
+        .method-header.active .method-arrow {
+            transform: rotate(180deg);
+        }
+
+        .method-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease;
+            padding: 0 30px;
+        }
+
+        .method-content.active {
+            max-height: 1600px;
+            padding: 0 30px 30px 30px;
+        }
+
+        .method-content ol {
+            counter-reset: step-counter;
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .method-content ol li {
+            counter-increment: step-counter;
+            padding: 15px 0 15px 50px;
+            position: relative;
+            line-height: 1.7;
+            font-size: 1.05em;
+        }
+
+        .method-content ol li::before {
+            content: counter(step-counter);
+            position: absolute;
+            left: 0;
+            top: 12px;
+            width: 32px;
+            height: 32px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+
+        .method-content h4 {
+            color: white;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        /* Form Section */
+        .form-section {
+            background: #f8fbfd;
+            padding: 50px;
+            border-radius: 16px;
+            margin-top: 60px;
+            border: 1px solid #e3eef5;
+        }
+
+        .form-section h3 {
+            font-family: 'Playfair Display', Georgia, serif;
+            color: #0c2d48;
+            font-size: 2em;
+            margin-bottom: 15px;
+            font-weight: 600;
+        }
+
+        .form-intro {
+            color: #5a6c7d;
+            margin-bottom: 40px;
+            font-size: 1.05em;
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1em;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 2px solid #d1dce5;
+            border-radius: 8px;
+            font-size: 1em;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #2e8b9e;
+            box-shadow: 0 0 0 3px rgba(46, 139, 158, 0.1);
+        }
+
+        .form-group textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .required {
+            color: #e74c3c;
+            font-weight: 700;
+        }
+
+        .optional-section {
+            margin-top: 50px;
+            padding-top: 40px;
+            border-top: 2px solid #d1dce5;
+        }
+
+        .optional-section h3 {
+            font-size: 1.6em;
+            color: #145374;
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #2e8b9e 0%, #145374 100%);
+            color: white;
+            padding: 18px 50px;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.15em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 30px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 15px rgba(46, 139, 158, 0.3);
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(46, 139, 158, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        @media (max-width: 768px) {
+            .hero {
+                padding: 60px 30px;
+            }
+
+            .hero h1 {
+                font-size: 2.5em;
+            }
+
+            .hero .subtitle {
+                font-size: 1.1em;
+            }
+
+            .intro-section,
+            .content,
+            .upload-section,
+            .form-section {
+                padding: 40px 30px;
+            }
+
+            .section-title {
+                font-size: 1.8em;
+            }
+
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="hero">
+            <div class="hero-content">
+                <h1>Drone A Whale</h1>
+                <p class="subtitle">A Citizen Science Whale Photogrammetry Project</p>
+            </div>
+        </div>
+
+        <div class="intro-section">
+            <p class="intro-text">Help us study whale health by sharing your drone footage. Your videos help scientists measure whale body condition and track population health. Every contribution advances whale conservation.</p>
+        </div>
+
+        <div class="content">
+            <!-- About Section -->
+            <div class="section">
+                <h2 class="section-title">About the Project</h2>
+                <div class="section-content">
+                    <p>Drone A Whale collects aerial footage of whales from the public and uses photogrammetry to measure whale body condition. These measurements help us understand whale health and track populations over time.</p>
+                </div>
+            </div>
+
+            <!-- Who Runs It Section -->
+            <div class="section">
+                <h2 class="section-title">Who Runs This Project</h2>
+                <div class="section-content">
+                    <p>This project is led by <strong>Associate Professor Rebecca Dunlop</strong> at the University of Queensland, along with her research lab team, with help from <strong>Haneen Abu-Obeid</strong>, PhD candidate at UQ.</p>
+                </div>
+            </div>
+
+            <!-- Citizen Science Section -->
+            <div class="section">
+                <h2 class="section-title">What is Citizen Science?</h2>
+                <div class="section-content">
+                    <p>Citizen science is when members of the public contribute to scientific research. By sharing your whale footage, you're helping us understand whale health and conservation needs.</p>
+
+                    <p style="margin-top: 25px;"><strong>How your contribution helps:</strong></p>
+                    <ul>
+                        <li>Track whale population health over time</li>
+                        <li>Identify and monitor individual whales</li>
+                        <li>Understand pregnancy and breeding success</li>
+                        <li>Study environmental impacts on whales</li>
+                        <li>Inform conservation strategies and policies</li>
+                        <li>Cover broader geographic areas than researchers alone</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Photogrammetry Section -->
+            <div class="section">
+                <h2 class="section-title">What is Photogrammetry for Whales?</h2>
+                <div class="section-content">
+                    <p>Photogrammetry lets us take precise measurements from drone footage. By filming whales from directly above, we can measure their body length, width, and volume to assess their health without disturbing them.</p>
+                    
+                    <p>These measurements tell us if whales are healthy, undernourished, or pregnant. Good quality footage and accurate metadata are essential for reliable measurements.</p>
+                </div>
+            </div>
+
+            <!-- What We Need Section -->
+            <div class="section">
+                <h2 class="section-title">What We Need From You</h2>
+                <div class="section-content">
+                    <ul>
+                        <li>Overhead drone footage of whales (filmed from directly above)</li>
+                        <li>Clear footage with minimal water glare</li>
+                        <li>A shareable link to the footage</li>
+                        <li>Metadata about filming conditions in the form below</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Privacy Note Section -->
+            <div class="section">
+                <div style="background: linear-gradient(135deg, #f8fbfd 0%, #e8f4f8 100%); border-left: 4px solid #2e8b9e; padding: 30px; border-radius: 8px;">
+                    <h3 style="color: #0c2d48; font-size: 1.3em; margin-bottom: 15px; font-weight: 600;">Privacy & Research Use</h3>
+                    <p style="color: #2c3e50; line-height: 1.8; margin-bottom: 12px;"><strong>All footage is used strictly for research purposes only.</strong> Your videos will be analyzed solely for scientific study of whale body condition and health.</p>
+                    <p style="color: #2c3e50; line-height: 1.8;"><strong>Your submissions remain completely anonymous</strong> unless you choose to provide your contact details in the optional section. We do not share footage with third parties outside of research purposes.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Section - Prominent -->
+        <div class="upload-section">
+            <h2>How to Share Your Footage</h2>
+            <p class="upload-intro">Upload your video using one of the methods below and paste the shareable link in the form. Make sure the link allows viewer access.</p>
+
+            <div class="upload-methods">
+                <div class="method-card">
+                    <div class="method-header" onclick="toggleMethod(this)">
+                        <h3>Option 1: Google Drive</h3>
+                        <span class="method-arrow">▼</span>
+                    </div>
+                    <div class="method-content">
+                        <ol>
+                            <li>Go to <strong>drive.google.com</strong> and sign in to your Google account</li>
+                            <li>Click the <strong>"+ New"</strong> button (top left) and select <strong>"File upload"</strong></li>
+                            <li>Select your drone footage video file from your computer and wait for it to upload completely</li>
+                            <li>Once uploaded, find the file in your Drive, <strong>right-click</strong> on it, and select <strong>"Share"</strong></li>
+                            <li>In the sharing settings, click <strong>"Change to anyone with the link"</strong> under "General access"</li>
+                            <li>Ensure the permission is set to <strong>"Viewer"</strong></li>
+                            <li>Click <strong>"Copy link"</strong> at the bottom of the dialog</li>
+                            <li>Paste the copied link in the metadata form below</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-header" onclick="toggleMethod(this)">
+                        <h3>Option 2: YouTube (Unlisted)</h3>
+                        <span class="method-arrow">▼</span>
+                    </div>
+                    <div class="method-content">
+                        <ol>
+                            <li>Go to <strong>youtube.com</strong> and sign in to your account</li>
+                            <li>Click the <strong>camera icon</strong> (top right) and select <strong>"Upload video"</strong></li>
+                            <li>Select your drone footage file and wait for it to upload</li>
+                            <li>Set the visibility to <strong>"Unlisted"</strong> (not Public or Private)</li>
+                            <li>Add a title if desired, then click <strong>"Next"</strong> through the remaining steps</li>
+                            <li>Once published, click <strong>"Share"</strong> and copy the video URL</li>
+                            <li>Paste the link in the metadata form below</li>
+                        </ol>
+                    </div>
+                </div>
+
+                <div class="method-card">
+                    <div class="method-header" onclick="toggleMethod(this)">
+                        <h3>Option 3: File Transfer Services</h3>
+                        <span class="method-arrow">▼</span>
+                    </div>
+                    <div class="method-content">
+                        <div style="margin-bottom: 30px;">
+                            <h4 style="color: white; font-size: 1.1em; margin-bottom: 15px;">WeTransfer</h4>
+                            <ol>
+                                <li>Go to <strong>wetransfer.com</strong> (no account needed for free version)</li>
+                                <li>Click <strong>"Add your files"</strong> and select your drone footage</li>
+                                <li>Choose <strong>"Get transfer link"</strong> option</li>
+                                <li>Click <strong>"Transfer"</strong> to start uploading</li>
+                                <li>Once complete, click <strong>"Copy link"</strong></li>
+                                <li>Paste the link in the metadata form below</li>
+                                <li style="list-style: none; margin-top: 10px;"><em style="font-size: 0.95em; opacity: 0.9;">Note: Free WeTransfer links expire after 7 days. For permanent storage, consider Google Drive or Dropbox</em></li>
+                            </ol>
+                        </div>
+
+                        <div style="margin-bottom: 30px;">
+                            <h4 style="color: white; font-size: 1.1em; margin-bottom: 15px;">Dropbox</h4>
+                            <ol>
+                                <li>Sign in to <strong>dropbox.com</strong></li>
+                                <li>Click <strong>"Upload files"</strong> and select your video</li>
+                                <li>Once uploaded, hover over the file and click <strong>"Share"</strong></li>
+                                <li>Click <strong>"Create link"</strong>, then <strong>"Copy link"</strong></li>
+                                <li>Paste the link in the metadata form below</li>
+                            </ol>
+                        </div>
+
+                        <div>
+                            <h4 style="color: white; font-size: 1.1em; margin-bottom: 15px;">Microsoft OneDrive</h4>
+                            <ol>
+                                <li>Sign in to <strong>onedrive.com</strong></li>
+                                <li>Click <strong>"Upload"</strong> and select your video file</li>
+                                <li>Right-click the uploaded file and select <strong>"Share"</strong></li>
+                                <li>Click <strong>"Copy link"</strong> (ensure it's set to "Anyone with the link")</li>
+                                <li>Paste the link in the metadata form below</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content">
+
+            <!-- Metadata Form -->
+            <div class="form-section">
+                <h3>Footage Information & Metadata</h3>
+                <p class="form-intro">Please provide information about your footage. This metadata helps us analyze the video accurately.</p>
+
+                <form id="metadataForm">
+                    <!-- Prominent Link Input -->
+                    <div class="form-group" style="background: linear-gradient(135deg, #2e8b9e 0%, #145374 100%); padding: 30px; border-radius: 12px; margin-bottom: 40px;">
+                        <label for="footageLink" style="color: white; font-size: 1.2em; margin-bottom: 15px;">Footage Link <span class="required">*</span></label>
+                        <input type="url" id="footageLink" name="footageLink" placeholder="https://drive.google.com/... or https://youtube.com/... or https://wetransfer.com/..." required style="font-size: 1.05em; padding: 16px;">
+                        <p style="color: rgba(255,255,255,0.9); margin-top: 12px; font-size: 0.95em; line-height: 1.6;">Paste the shareable link from one of the upload methods above. Ensure the link allows viewer access.</p>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="filmingDate">Date of Filming <span class="required">*</span></label>
+                        <input type="date" id="filmingDate" name="filmingDate" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location <span class="required">*</span></label>
+                        <input type="text" id="location" name="location" placeholder="e.g., Moreton Bay, Queensland" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="coordinates">GPS Coordinates (if available)</label>
+                        <input type="text" id="coordinates" name="coordinates" placeholder="e.g., -27.1234, 153.4567">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="droneModel">Drone Model <span class="required">*</span></label>
+                        <select id="droneModel" name="droneModel" required>
+                            <option value="">Select your drone model</option>
+                            <option value="dji-mavic-3">DJI Mavic 3</option>
+                            <option value="dji-mavic-2">DJI Mavic 2 Pro/Zoom</option>
+                            <option value="dji-mini-3">DJI Mini 3 Pro</option>
+                            <option value="dji-mini-2">DJI Mini 2</option>
+                            <option value="dji-air-2s">DJI Air 2S</option>
+                            <option value="dji-phantom-4">DJI Phantom 4 Pro</option>
+                            <option value="autel-evo">Autel EVO series</option>
+                            <option value="parrot-anafi">Parrot Anafi</option>
+                            <option value="other">Other (please specify in notes)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="altitude">Approximate Altitude/Height (meters) <span class="required">*</span></label>
+                        <input type="number" id="altitude" name="altitude" placeholder="e.g., 30" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="zoom">Digital Zoom Used <span class="required">*</span></label>
+                        <select id="zoom" name="zoom" required>
+                            <option value="">Select zoom level</option>
+                            <option value="none">None - No zoom used</option>
+                            <option value="1.5x">1.5x zoom</option>
+                            <option value="2x">2x zoom</option>
+                            <option value="3x">3x zoom</option>
+                            <option value="4x">4x zoom</option>
+                            <option value="5x">5x zoom or more</option>
+                            <option value="unknown">Unknown</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="waveConditions">Wave Conditions <span class="required">*</span></label>
+                        <select id="waveConditions" name="waveConditions" required>
+                            <option value="">Select wave conditions</option>
+                            <option value="calm">Calm (0-0.5m)</option>
+                            <option value="slight">Slight (0.5-1m)</option>
+                            <option value="moderate">Moderate (1-2m)</option>
+                            <option value="rough">Rough (2-3m)</option>
+                            <option value="very-rough">Very Rough (3m+)</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="waterClarity">Water Clarity <span class="required">*</span></label>
+                        <select id="waterClarity" name="waterClarity" required>
+                            <option value="">Select water clarity</option>
+                            <option value="excellent">Excellent - Clear, could see whale clearly underwater</option>
+                            <option value="good">Good - Minor turbidity, whale visible</option>
+                            <option value="moderate">Moderate - Some turbidity, whale partially visible</option>
+                            <option value="poor">Poor - Murky, whale difficult to see</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="whaleSpecies">Whale Species (if known)</label>
+                        <select id="whaleSpecies" name="whaleSpecies">
+                            <option value="">Select species if known</option>
+                            <option value="humpback">Humpback Whale</option>
+                            <option value="southern-right">Southern Right Whale</option>
+                            <option value="minke">Minke Whale</option>
+                            <option value="blue">Blue Whale</option>
+                            <option value="gray">Gray Whale</option>
+                            <option value="orca">Orca (Killer Whale)</option>
+                            <option value="unknown">Unknown</option>
+                            <option value="other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="numberWhales">Number of Whales in Footage</label>
+                        <input type="number" id="numberWhales" name="numberWhales" min="1" placeholder="e.g., 1">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cameraSettings">Camera Settings (if known)</label>
+                        <textarea id="cameraSettings" name="cameraSettings" placeholder="e.g., 4K 60fps, gimbal angle, any filters used"></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="additionalNotes">Additional Notes or Observations</label>
+                        <textarea id="additionalNotes" name="additionalNotes" placeholder="Any other relevant information about the conditions, whale behavior, or footage quality"></textarea>
+                    </div>
+
+                    <!-- Optional Operator Details -->
+                    <div class="optional-section">
+                        <h3>Drone Operator Details (Optional)</h3>
+                        <p style="margin-bottom: 25px; color: #5a6c7d;">If you'd like us to contact you or acknowledge your contribution, please provide your details.</p>
+
+                        <div class="form-group">
+                            <label for="operatorName">Your Name</label>
+                            <input type="text" id="operatorName" name="operatorName" placeholder="Full name">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="operatorEmail">Email Address</label>
+                            <input type="email" id="operatorEmail" name="operatorEmail" placeholder="your.email@example.com">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="operatorPhone">Phone Number</label>
+                            <input type="tel" id="operatorPhone" name="operatorPhone" placeholder="+61 xxx xxx xxx">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="submit-btn">Submit Your Contribution</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Toggle method cards
+        function toggleMethod(header) {
+            const content = header.nextElementSibling;
+            const isActive = header.classList.contains('active');
+            
+            // Close all methods
+            document.querySelectorAll('.method-header').forEach(h => {
+                h.classList.remove('active');
+                h.nextElementSibling.classList.remove('active');
+            });
+            
+            // Open clicked method if it wasn't active
+            if (!isActive) {
+                header.classList.add('active');
+                content.classList.add('active');
+            }
+        }
+
+        // Form submission handler
+        document.getElementById('metadataForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(this);
+            
+            // Here you would typically send this data to a server
+            // For now, we'll show a success message
+            alert('Thank you for your contribution!\n\nYour footage submission has been recorded. Our research team will review your submission and may contact you if we need any additional information.\n\nYour participation in citizen science makes a real difference in whale conservation!');
+            
+            // Optional: Log the data (for demonstration)
+            console.log('Form submitted with data:');
+            for (let [key, value] of formData.entries()) {
+                console.log(key + ': ' + value);
+            }
+            
+            // Reset form
+            this.reset();
+            
+            // Scroll to top
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+
+        // Smooth scroll for better UX
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
